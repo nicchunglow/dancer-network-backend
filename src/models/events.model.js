@@ -1,6 +1,18 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const coordinateSchema = {
+  lat: {
+    type: Number,
+    min: -90,
+    max: 90
+  },
+  long: {
+    type: Number,
+    min: -180,
+    max: 180
+  }
+};
 const eventSchema = Schema({
   eventId: {
     type: Number,
@@ -20,10 +32,9 @@ const eventSchema = Schema({
   location: {
     type: String
   },
-  locationLat: Number,
-  locationLong: Number,
+  locationCoordinates: coordinateSchema,
   description: String,
-  dancestyle: String
+  danceStyle: String
 });
 
 const eventCreatorModel = mongoose.model("createEvent", eventSchema);
