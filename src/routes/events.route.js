@@ -16,7 +16,10 @@ const getAllEvents = async (req, res) => {
 };
 
 const getSingleEvent = async (req, res) => {
-  const event = await eventCreatorModel.find();
+  const event = await eventCreatorModel.findOne(
+    { eventId: req.params.id },
+    "-_id -__v"
+  );
   res.status(200).send(event);
 };
 
@@ -28,10 +31,9 @@ const createEvent = async (req, res) => {
 };
 
 const editSingleEvent = async (req, res) => {
-  const eventId = String(req.params.id);
   const newEvent = req.body;
   const foundEvent = await eventCreatorModel.findOneAndUpdate(
-    { id: eventId },
+    { eventId: req.params.id },
     newEvent,
     { new: true }
   );
@@ -39,9 +41,8 @@ const editSingleEvent = async (req, res) => {
 };
 
 const deleteSingleEvent = async (req, res) => {
-  const eventId = String(req.params.id);
   const deletedEvent = await eventCreatorModel.findOneAndDelete({
-    id: eventId
+    eventId: req.params.id
   });
   res.status(201).send(deletedEvent);
 };
@@ -52,11 +53,11 @@ router.post("/create", requireJsonContent, wrapAsync(createEvent));
 router.patch("/:id", wrapAsync(editSingleEvent));
 router.delete("/:id", wrapAsync(deleteSingleEvent));
 
-router.use((err,req, use, next) => {
+router.use((err, req, use, next) => {
   if (err.name === "ValidationError") {
     err.statusCode = 400;
   }
   next(err);
 });
 
-module.exports = router
+module.exports = router;
