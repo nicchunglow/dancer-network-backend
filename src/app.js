@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const eventsRouter = require("../src/routes/events.route");
 const usersRouter = require("../src/routes/users.route");
+const cookieParser = require("cookie-parser")
+require("dotenv").config();
+
 
 app.get("/", (req, res) => {
   res.send({
@@ -12,12 +15,12 @@ app.get("/", (req, res) => {
     "4": "DELETE    /events/:id",
     "5": "POST /users/register",
     "6": "POST /users/login",
-    "7": "GET /users/:id",
-    "8": "PATCH /users/:id",
-    "9": "DELETE /user/id"
+    "7": "GET /users/:username",
+    "8": "PATCH /users/:username",
+    "9": "DELETE /user/:username"
   });
 });
-
+app.use(cookieParser())
 app.use(express.json());
 
 app.use("/events", eventsRouter);

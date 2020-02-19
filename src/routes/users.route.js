@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const usersModel = require("../models/users.model");
-const wrapAsync = require("../utils/wrapAsync");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { protectRoute } = require("../middleware/auth");
 
 // const requireJsonContent = (req, res, next) => {
 //   if (req.headers["content-type"] !== "application/json") {
@@ -11,6 +12,16 @@ const bcrypt = require("bcryptjs");
 //     next();
 //   }
 // };
+
+const createJWTToken = username => {
+  const payload = { name: username };
+  const token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
+};
+
+const oneDay = 24 * 60 * 60 * 1000;
+const oneWeek = oneDay * 7;
+const expiryDate = new Date(Date.now() + oneWeek);
+
 router.post("/register", async (req, res, next) => {
   try {
     const user = new usersModel(req.body);
@@ -26,9 +37,18 @@ router.post("/login", async (req, res, next) => {
     const { username, password } = req.body;
     const user = await usersModel.findOne({ username });
     const result = await bcrypt.compare(password, user.password);
-    if (!result) {
+
+    if (!user || !result) {
       throw new Error("Login failed");
     }
+
+    const token = createJWTToken(user.username);
+
+    res.cookie("token", token, {
+      expires: expiryDate,
+      httpOnly: true
+    });
+
     res.status(201).json("You are now logged in!");
   } catch (err) {
     if (err.message === "Login failed") {
@@ -38,13 +58,13 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.get("/:username", async (req, res, next) => {
+router.get("/:username", protectRoute, async (req, res, next) => {
   const INCORRECT_USER_ERR_MSG = "Incorrect user!";
   try {
     if (req.user.username !== req.params.username) {
       throw new Error(INCORRECT_USER_ERR_MSG);
     }
-    const user = await usersModel.findOne({ username: username });
+    const user = await usersModel.findOne({ username: req.params.username });
     res.status(200).send(user);
   } catch (err) {
     if (err.message === INCORRECT_USER_ERR_MSG) {
@@ -54,13 +74,17 @@ router.get("/:username", async (req, res, next) => {
   }
 });
 
-router.patch("/:username", async (req, res) => {
+router.patch("/:username", async (req, res, next) => {
   try {
-    const user = await usersModel.findOneAndUpdate({
-      username: req.params.username
-    });
+    const newUser = req.body;
+    const user = await usersModel.findOneAndUpdate(
+      { username: req.params.username}, newUser ,
+      { new: true }
+    );
     res.status(200).send(user);
-  } catch (err) {}
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.delete("/:username", async (req, res, next) => {

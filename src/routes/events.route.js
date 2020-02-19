@@ -37,7 +37,7 @@ const editSingleEvent = async (req, res) => {
     newEvent,
     { new: true }
   );
-  res.status(201).send(foundEvent);
+  res.status(200).send(foundEvent);
 };
 
 const deleteSingleEvent = async (req, res) => {

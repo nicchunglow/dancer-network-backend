@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "jest --watchAll",
-    "test:coverage" : "jest --coverage",
+    "test:coverage": "jest --coverage",
     "start:dev": "nodemon src/index.js "
   },
   "keywords": [],
@@ -30,5 +30,5 @@
   },
   "jest": {
     "testEnvironment": "node"
-   }
+  }
 }

@@ -121,7 +121,7 @@ describe("Events", () => {
       const { body: events } = await request(app)
         .patch("/events/1")
         .send(mockEventData)
-        .expect(201);
+        .expect(200);
       expect(events).toMatchObject(mockEventData);
     });
   });
