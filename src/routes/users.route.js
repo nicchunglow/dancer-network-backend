@@ -4,6 +4,7 @@ const usersModel = require("../models/users.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { protectRoute } = require("../middleware/auth");
+const uuidv4 = require("uuid/v4");
 
 // const requireJsonContent = (req, res, next) => {
 //   if (req.headers["content-type"] !== "application/json") {
@@ -13,19 +14,22 @@ const { protectRoute } = require("../middleware/auth");
 //   }
 // };
 
-const createJWTToken = username => {
-  const payload = { name: username };
+const createJWTToken = (username, stageName) => {
+  const payload = { username: username, stageName: stageName };
   const token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
+  return token;
 };
 
 const oneDay = 24 * 60 * 60 * 1000;
 const oneWeek = oneDay * 7;
+
 const expiryDate = new Date(Date.now() + oneWeek);
 
 router.post("/register", async (req, res, next) => {
   try {
     const user = new usersModel(req.body);
     await usersModel.init();
+    user.userId = uuidv4();
     const newUser = await user.save();
     res.status(201).send(newUser);
   } catch (err) {
@@ -42,7 +46,7 @@ router.post("/login", async (req, res, next) => {
       throw new Error("Login failed");
     }
 
-    const token = createJWTToken(user.username);
+    const token = createJWTToken(user.username, user.stageName);
 
     res.cookie("token", token, {
       expires: expiryDate,
@@ -78,7 +82,8 @@ router.patch("/:username", async (req, res, next) => {
   try {
     const newUser = req.body;
     const user = await usersModel.findOneAndUpdate(
-      { username: req.params.username}, newUser ,
+      { username: req.params.username },
+      newUser,
       { new: true }
     );
     res.status(200).send(user);

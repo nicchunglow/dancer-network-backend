@@ -15,7 +15,7 @@ const coordinateSchema = {
 };
 const eventSchema = Schema({
   eventId: {
-    type: Number,
+    type: String,
     required: true,
     minlength: 1,
     unique: true
@@ -34,8 +34,8 @@ const eventSchema = Schema({
   },
   locationCoordinates: coordinateSchema,
   description: String,
-  danceStyle: String, 
-  eventOwner : String
+  danceStyle: String,
+  eventOwner: String
 });
 
 const eventCreatorModel = mongoose.model("createEvent", eventSchema);

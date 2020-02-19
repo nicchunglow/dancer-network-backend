@@ -31,6 +31,7 @@ describe("Events", () => {
     const userData = [
       {
         username: "totoro",
+        userId: "1",
         password: "chocoPie123",
         firstName: "Nic",
         lastName: "Chung",
@@ -38,6 +39,7 @@ describe("Events", () => {
       },
       {
         username: "mono",
+        userId: "2",
         password: "chocoPie123",
         firstName: "Pororo",
         lastName: "Chung",
@@ -56,6 +58,7 @@ describe("Events", () => {
     it("POST should add one user", async () => {
       const expectedUserData = {
         username: "mrliew",
+        userId : "3",
         password: "chocoPie123",
         firstName: "De",
         lastName: "Hua",
@@ -86,6 +89,7 @@ describe("Events", () => {
     it("GET shoulder respond with user details when correct user logs in", async () => {
       const expectedUserData = {
         username: "totoro",
+        userId: "1",
         password: "chocoPie123",
         firstName: "Nic",
         lastName: "Chung",
@@ -97,13 +101,13 @@ describe("Events", () => {
         .send(expectedUserData)
         .set("Cookie", "token=valid-token")
         .expect(200);
-      console.log(users);
       expect(users.username).toBe(expectedUserData.username);
       expect(users.password).not.toBe("chocoPie123");
     });
     it("PATCH edit user details after login", async () => {
       const expectedUserData = {
         username: "totoro",
+        userId: "1",
         password: "chocoPie123",
         firstName: "oppo",
         lastName: "Chung",
@@ -120,6 +124,7 @@ describe("Events", () => {
     it("DELETE user when the parem and input match", async () => {
       const expectedUserData = {
         username: "totoro",
+        userId: "1",
         password: "chocoPie123",
         firstName: "Nic",
         lastName: "Chung",

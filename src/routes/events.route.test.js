@@ -3,6 +3,8 @@ const app = require("../app");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const eventsModel = require("../models/events.model");
+const jwt = require("jsonwebtoken");
+jest.mock("jsonwebtoken");
 
 mongoose.set("useNewUrlParser", true);
 mongoose.set("useFindAndModify", false);
@@ -32,22 +34,33 @@ describe("Events", () => {
           lat: 10,
           long: 90.55
         },
-        eventId: 1,
-        eventName: "FINDING MEMO "
+        eventId: "1",
+        eventName: "FINDING MEMO ",
+        eventStartDate: new Date("2020-10-26"),
+        eventEndDate: new Date("2020-10-27"),
+        location: "Aliwal",
+        description: "blah blah blah",
+        eventOwner: "Totoro"
       },
       {
         locationCoordinates: {
           lat: 10,
           long: 90.55
         },
-        eventId: 3,
-        eventName: "FINDING TIKO 3 "
+        eventId: "3",
+        eventName: "FINDING TIKO 3 ",
+        eventStartDate: new Date("2020-10-10"),
+        eventEndDate: new Date("2020-10-20"),
+        location: "Aliwal",
+        description: "blah blah blah",
+        eventOwner: "Totoro"
       }
     ];
     await eventsModel.create(eventData);
   });
 
   afterEach(async () => {
+    jest.resetAllMocks();
     await eventsModel.deleteMany();
   });
 
@@ -63,22 +76,31 @@ describe("Events", () => {
             lat: 10,
             long: 90.55
           },
-          eventId: 1,
-          eventName: "FINDING MEMO "
+          eventId: "1",
+          eventName: "FINDING MEMO ",
+          eventStartDate: new Date("2020-10-26").toISOString(),
+          eventEndDate: new Date("2020-10-27").toISOString(),
+          location: "Aliwal",
+          description: "blah blah blah",
+          eventOwner: "Totoro"
         },
         {
           locationCoordinates: {
             lat: 10,
             long: 90.55
           },
-          eventId: 3,
-          eventName: "FINDING TIKO 3 "
+          eventId: "3",
+          eventName: "FINDING TIKO 3 ",
+          eventStartDate: new Date("2020-10-10").toISOString(),
+          eventEndDate: new Date("2020-10-20").toISOString(),
+          location: "Aliwal",
+          description: "blah blah blah",
+          eventOwner: "Totoro"
         }
       ];
       const { body: events } = await request(app)
         .get("/events")
         .expect(200);
-      // console.log(events)
       expect(events).toMatchObject(mockEventData);
     });
     it("GET should retrieve one event only from the db", async () => {
@@ -87,7 +109,7 @@ describe("Events", () => {
           lat: 10,
           long: 90.55
         },
-        eventId: 1,
+        eventId: "1",
         eventName: "FINDING MEMO "
       };
       const { body: events } = await request(app)
@@ -96,48 +118,57 @@ describe("Events", () => {
       expect(events).toMatchObject(mockEventData);
     });
   });
-  describe("POST", () => {
+  describe("/events/create", () => {
     it("POST should post one event", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro" });
       const mockEventData = {
         locationCoordinates: {
           lat: 10,
           long: 90.55
         },
-        eventId: 5,
-        eventName: "FINDING MMORPG"
+        eventName: "FINDING MMORPG",
+        eventStartDate: new Date("2020-10-10").toISOString(),
+        eventEndDate: new Date("2020-10-20").toISOString(),
+        location: "Aliwal",
+        description: "blah blah blah",
+        eventOwner: "Totoro"
       };
       const { body: events } = await request(app)
         .post("/events/create")
         .send(mockEventData)
+        .set("Cookie", "token=valid-token")
         .expect(201);
+      console.log(events);
       expect(events).toMatchObject(mockEventData);
     });
   });
   describe("PATCH", () => {
     it("PATCH should edit one event the name", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro" });
       const mockEventData = {
-        eventName: "FINDING PORORO"
+        eventName: "FINDING PORORO",
+        eventId: "1"
       };
       const { body: events } = await request(app)
         .patch("/events/1")
         .send(mockEventData)
+        .set("Cookie", "token=valid-token")
         .expect(200);
       expect(events).toMatchObject(mockEventData);
     });
   });
   describe("DELETE", () => {
     it("DELETE should DELETE one event", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro" });
       const mockEventData = {
-        locationCoordinates: {
-          lat: 10,
-          long: 90.55
-        },
-        eventId: 1,
-        eventName: "FINDING MEMO "
+        eventName: "FINDING MEMO ",
+        eventOwner: "Totoro",
+        eventId: "1"
       };
       const { body: events } = await request(app)
         .delete("/events/1")
         .send(mockEventData)
+        .set("cookie", "token=valid-token")
         .expect(201);
       expect(events).toMatchObject(mockEventData);
     });
