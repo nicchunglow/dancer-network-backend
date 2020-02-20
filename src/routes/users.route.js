@@ -6,8 +6,8 @@ const jwt = require("jsonwebtoken");
 const { protectRoute } = require("../middleware/auth");
 const uuidv4 = require("uuid/v4");
 
-const createJWTToken = (username, stageName) => {
-  const payload = { username: username, stageName: stageName };
+const createJWTToken = (username, userId) => {
+  const payload = { username: username, userId: userId };
   const token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
   return token;
 };
@@ -38,7 +38,7 @@ router.post("/login", async (req, res, next) => {
       throw new Error("Login failed");
     }
 
-    const token = createJWTToken(user.username, user.stageName);
+    const token = createJWTToken(user.username, user.userId);
 
     res.cookie("token", token, {
       expires: expiryDate,
@@ -70,8 +70,12 @@ router.get("/:username", protectRoute, async (req, res, next) => {
   }
 });
 
-router.patch("/:username", async (req, res, next) => {
+router.patch("/:username", protectRoute, async (req, res, next) => {
+  const INCORRECT_USER_ERR_MSG = "Incorrect user!";
   try {
+    if (req.user.username !== req.params.username) {
+      throw new Error(INCORRECT_USER_ERR_MSG);
+    }
     const newUser = req.body;
     const user = await usersModel.findOneAndUpdate(
       { username: req.params.username },
@@ -80,17 +84,27 @@ router.patch("/:username", async (req, res, next) => {
     );
     res.status(200).send(user);
   } catch (err) {
+    if (err.message === INCORRECT_USER_ERR_MSG) {
+      err.statusCode = 403;
+    }
     next(err);
   }
 });
 
-router.delete("/:username", async (req, res, next) => {
+router.delete("/:username", protectRoute, async (req, res, next) => {
+  const WRONG_USER_MESSAGE = "You forbidden. Back off!";
   try {
+    if (req.user.username != req.params.username) {
+      throw new Error(WRONG_USER_MESSAGE);
+    }
     const userDeleted = await usersModel.findOneAndDelete({
       username: req.params.username
     });
     res.status(201).send(userDeleted);
   } catch (err) {
+    if (err.message === WRONG_USER_MESSAGE) {
+      err.statusCode = 403;
+    }
     next(err);
   }
 });

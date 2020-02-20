@@ -12,7 +12,7 @@ const userSchema = Schema({
   username: {
     type: String,
     required: true,
-    minlength: 1,
+    minlength: 5,
     unique: true
   },
   password: {

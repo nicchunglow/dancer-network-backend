@@ -42,7 +42,6 @@ const editSingleEvent = async (req, res, next) => {
     err.statusCode = 403;
     next(err);
   }
-
   const updatedEvent = await eventCreatorModel.findOneAndUpdate(
     { eventId: req.params.id },
     newEvent,
@@ -53,12 +52,12 @@ const editSingleEvent = async (req, res, next) => {
   res.status(200).send(usernameUpdatedWithEvent);
 };
 
-const deleteSingleEvent = async (req, res) => {
+const deleteSingleEvent = async (req, res, next) => {
   const eventOwnerCheck = await eventCreatorModel.findOne({
     eventId: req.params.id
   });
   if (eventOwnerCheck.eventOwnerId != req.user.userId) {
-    const err = new Error("You cannot delete THIS SHIT.");
+    const err = new Error("You forbidden. Back off!");
     err.statusCode = 403;
     next(err);
   }

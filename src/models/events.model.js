@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const checkValidDate = function(v) {
+  return /^(20| 21)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/.test(v);
+};
+
 const coordinateSchema = {
   lat: {
     type: Number,
@@ -28,13 +32,24 @@ const eventSchema = Schema({
     unique: true
   },
 
-  eventStartDate: Date,
-  eventEndDate: Date,
+  eventStartDate: {
+    type: String,
+    validate: {
+      validator: checkValidDate
+    }
+  },
+  eventEndDate: {
+    type: String,
+    validate: {
+      validator: checkValidDate
+    }
+  },
   location: {
     type: String
   },
   locationCoordinates: coordinateSchema,
   description: String,
+
   eventSummary: {
     type: String,
     maxlength: 200
@@ -48,6 +63,8 @@ const eventSchema = Schema({
     immutable: true
   }
 });
+
+
 
 const eventCreatorModel = mongoose.model("createEvent", eventSchema);
 

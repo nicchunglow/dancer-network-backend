@@ -38,7 +38,7 @@ describe("Events", () => {
         stageName: "Jay Chou"
       },
       {
-        username: "mono",
+        username: "monopolo",
         userId: "2",
         password: "chocoPie123",
         firstName: "Pororo",
@@ -58,7 +58,7 @@ describe("Events", () => {
     it("POST should add one user", async () => {
       const expectedUserData = {
         username: "mrliew",
-        userId : "3",
+        userId: "3",
         password: "chocoPie123",
         firstName: "De",
         lastName: "Hua",
@@ -70,6 +70,23 @@ describe("Events", () => {
         .expect(201);
       expect(users.username).toBe(expectedUserData.username);
       expect(users.password).not.toBe("chocoPie123");
+    });
+    it("POST should not add user if schema is wrong", async () => {
+      const expectedUserData = {
+        username: "m",
+        userId: "3",
+        password: "chocoPie123",
+        firstName: "De",
+        lastName: "Hua",
+        stageName: "SuperStar"
+      };
+      const { body: error } = await request(app)
+        .post("/users/register")
+        .send(expectedUserData)
+        .expect(400);
+      expect(error.error).toEqual(
+        expect.stringContaining("createUsers validation failed")
+      );
     });
   });
   describe("/users/login", () => {
@@ -84,9 +101,63 @@ describe("Events", () => {
         .expect(201);
       expect(users).toBe("You are now logged in!");
     });
+    it("POST user should not login if the username or password is wrong", async () => {
+      const expectedUserData = {
+        username: "totoro",
+        password: "chocoie123"
+      };
+      const { body: error } = await request(app)
+        .post("/users/login")
+        .send(expectedUserData)
+        .expect(400);
+      expect(error.error).toEqual("Login failed");
+    });
   });
+
   describe("/users/:username", () => {
-    it("GET shoulder respond with user details when correct user logs in", async () => {
+    it("GET should respond with user details with the right JWT token", async () => {
+      const expectedUserData = {
+        username: "totoro",
+        userId: "1",
+        password: "chocoPie123",
+        firstName: "Nic",
+        lastName: "Chung",
+        stageName: "Jay Chou"
+      };
+      jwt.verify.mockReturnValueOnce({
+        username: expectedUserData.username,
+        userId: "1"
+      });
+      const { body: users } = await request(app)
+        .get(`/users/${expectedUserData.username}`)
+        .send(expectedUserData)
+        .set("Cookie", "token=valid-token")
+        .expect(200);
+      expect(users.username).toBe(expectedUserData.username);
+      expect(users.password).not.toBe("chocoPie123");
+    });
+
+    it("GET should not get their details when JWT and params does not match", async () => {
+      const expectedUserData = {
+        username: "totoro",
+        userId: "1",
+        password: "chocoPie123",
+        firstName: "Nic",
+        lastName: "Chung",
+        stageName: "Jay Chou"
+      };
+      jwt.verify.mockReturnValueOnce({
+        username: "totochan",
+        userId: "1"
+      });
+      const { body: error } = await request(app)
+        .get(`/users/${expectedUserData.username}`)
+        .send(expectedUserData)
+        .set("Cookie", "token=valid-token")
+        .expect(403);
+      expect(error.error).toEqual("Incorrect user!");
+    });
+    it("GET should not be authorized if there is no JWT", async () => {
       const expectedUserData = {
         username: "totoro",
         userId: "1",
@@ -96,14 +167,13 @@ describe("Events", () => {
         stageName: "Jay Chou"
       };
       jwt.verify.mockReturnValueOnce({ username: expectedUserData.username });
-      const { body: users } = await request(app)
+      const { body: error } = await request(app)
         .get(`/users/${expectedUserData.username}`)
         .send(expectedUserData)
-        .set("Cookie", "token=valid-token")
-        .expect(200);
-      expect(users.username).toBe(expectedUserData.username);
-      expect(users.password).not.toBe("chocoPie123");
+        .expect(401);
+      expect(error.error).toEqual("You are not authorized.");
     });
+
     it("PATCH edit user details after login", async () => {
       const expectedUserData = {
         username: "totoro",
@@ -121,6 +191,25 @@ describe("Events", () => {
         .expect(200);
       expect(users).toMatchObject(expectedUserData);
     });
+
+    it("PATCH should not edit if the user is unauthorized", async () => {
+      const expectedUserData = {
+        username: "totoro",
+        userId: "1",
+        password: "chocoPie123",
+        firstName: "oppo",
+        lastName: "Chung",
+        stageName: "Jay Chou"
+      };
+      jwt.verify.mockReturnValueOnce({ username: "toporo" });
+      const { body: error } = await request(app)
+        .patch(`/users/${expectedUserData.username}`)
+        .send(expectedUserData)
+        .set("Cookie", "token=valid-token")
+        .expect(403);
+      expect(error.error).toEqual("Incorrect user!");
+    });
+
     it("DELETE user when the parem and input match", async () => {
       const expectedUserData = {
         username: "totoro",
@@ -130,15 +219,37 @@ describe("Events", () => {
         lastName: "Chung",
         stageName: "Jay Chou"
       };
-      jwt.verify.mockReturnValueOnce({ username: expectedUserData.username });
+      jwt.verify.mockReturnValueOnce({
+        username: expectedUserData.username,
+        userId: "1"
+      });
       const { body: users } = await request(app)
         .delete(`/users/${expectedUserData.username}`)
         .send(expectedUserData)
         .set("Cookie", "token=valid-token")
         .expect(201);
-      expect(users).not.toEqual(expectedUserData.password);
       expect(users.username).toBe(expectedUserData.username);
-      expect(users.stageName).toBe(expectedUserData.stageName);
+    });
+
+    it("DELETE user will not delete when the username does not match", async () => {
+      const expectedUserData = {
+        username: "totoro",
+        userId: "1",
+        password: "chocoPie123",
+        firstName: "Nic",
+        lastName: "Chung",
+        stageName: "Jay Chou"
+      };
+      jwt.verify.mockReturnValueOnce({
+        username: "Toporo",
+        userId: "1"
+      });
+      const { body: error } = await request(app)
+        .delete(`/users/${expectedUserData.username}`)
+        .send(expectedUserData)
+        .set("Cookie", "token=valid-token")
+        .expect(403);
+      expect(error.error).toEqual("You forbidden. Back off!");
     });
   });
 });

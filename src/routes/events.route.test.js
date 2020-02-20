@@ -36,11 +36,14 @@ describe("Events", () => {
         },
         eventId: "1",
         eventName: "FINDING MEMO ",
-        eventStartDate: new Date("2020-10-26"),
-        eventEndDate: new Date("2020-10-27"),
+        eventStartDate: "2020-10-26",
+        eventEndDate: "2020-10-27",
         location: "Aliwal",
         description: "blah blah blah",
-        eventOwner: "Totoro"
+        eventSummary: "Not lorem",
+        danceStyle: "Hip Hop",
+        eventOwner: "Totoro",
+        eventOwnerId: "10"
       },
       {
         locationCoordinates: {
@@ -49,11 +52,14 @@ describe("Events", () => {
         },
         eventId: "3",
         eventName: "FINDING TIKO 3 ",
-        eventStartDate: new Date("2020-10-10"),
-        eventEndDate: new Date("2020-10-20"),
+        eventStartDate: "2020-10-10",
+        eventEndDate: "2020-10-20",
         location: "Aliwal",
         description: "blah blah blah",
-        eventOwner: "Totoro"
+        eventSummary: "Not ipsem",
+        danceStyle: "Waacking",
+        eventOwner: "Pororo",
+        eventOwnerId: "12"
       }
     ];
     await eventsModel.create(eventData);
@@ -68,8 +74,8 @@ describe("Events", () => {
     expect(1).toBe(1);
   });
 
-  describe("GET EVENTS", () => {
-    it("GET should retrieve all events but only the following: eventName eventStartDate eventEndDate Location locationCoordiantes danceStyle eventSummary", async () => {
+  describe("/events", () => {
+    it("GET should retrieve all events but with the following key:value pairs: eventName eventStartDate eventEndDate Location locationCoordiantes danceStyle eventSummary", async () => {
       const mockEventData = [
         {
           locationCoordinates: {
@@ -77,9 +83,9 @@ describe("Events", () => {
             long: 90.55
           },
           eventName: "FINDING MEMO ",
-          eventStartDate: new Date("2020-10-26").toISOString(),
-          eventEndDate: new Date("2020-10-27").toISOString(),
-          location: "Aliwal",
+          eventStartDate: "2020-10-26",
+          eventEndDate: "2020-10-27",
+          location: "Aliwal"
         },
         {
           locationCoordinates: {
@@ -87,9 +93,9 @@ describe("Events", () => {
             long: 90.55
           },
           eventName: "FINDING TIKO 3 ",
-          eventStartDate: new Date("2020-10-10").toISOString(),
-          eventEndDate: new Date("2020-10-20").toISOString(),
-          location: "Aliwal",
+          eventStartDate: "2020-10-10",
+          eventEndDate: "2020-10-20",
+          location: "Aliwal"
         }
       ];
       const { body: events } = await request(app)
@@ -97,6 +103,97 @@ describe("Events", () => {
         .expect(200);
       expect(events).toMatchObject(mockEventData);
     });
+
+    it("GET should not get other details from the schema", async () => {
+      const mockEventData = [
+        {
+          locationCoordinates: {
+            lat: 10,
+            long: 90.55
+          },
+          eventId: "1",
+          eventName: "FINDING MEMO ",
+          eventStartDate: "2020-10-26",
+          eventEndDate: "2020-10-27",
+          location: "Aliwal",
+          description: "blah blah blah",
+          eventSummary: "Not lorem",
+          danceStyle: "Hip Hop",
+          eventOwner: "Totoro",
+          eventOwnerId: "10"
+        },
+        {
+          locationCoordinates: {
+            lat: 10,
+            long: 90.55
+          },
+          eventId: "3",
+          eventName: "FINDING TIKO 3 ",
+          eventStartDate: "2020-10-10",
+          eventEndDate: "2020-10-20",
+          location: "Aliwal",
+          description: "blah blah blah",
+          eventSummary: "Not ipsem",
+          danceStyle: "Waacking",
+          eventOwner: "Pororo",
+          eventOwnerId: "12"
+        }
+      ];
+      const { body: events } = await request(app)
+        .get("/events")
+        .expect(200);
+      expect(events).not.toMatchObject(mockEventData);
+    });
+  });
+
+  describe("/events/create", () => {
+    it("POST should post one event", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro" });
+      const mockEventData = {
+        locationCoordinates: {
+          lat: 10,
+          long: 90.55
+        },
+        eventName: "FINDING MMORPG",
+        eventStartDate: "2020-10-10",
+        eventEndDate: "2020-10-20",
+        location: "Aliwal",
+        description: "blah blah blah",
+        eventOwner: "Totoro"
+      };
+      const { body: events } = await request(app)
+        .post("/events/create")
+        .send(mockEventData)
+        .set("Cookie", "token=valid-token")
+        .expect(201);
+      expect(events).toMatchObject(mockEventData);
+    });
+    it("POST should get 'ValidationError' if date are of wrong values", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro", userId: "10" });
+      const mockEventData = {
+        locationCoordinates: {
+          lat: 10,
+          long: 90.55
+        },
+        eventName: "FINDING MMORPG",
+        eventStartDate: "20201-10-10",
+        eventEndDate: "20210-10-20",
+        location: "Aliwal",
+        description: "blah blah blah",
+        eventOwner: "Totoro",
+        eventOwnerId: "10"
+      };
+      const { body: error } = await request(app)
+        .post("/events/create")
+        .send(mockEventData)
+        .set("Cookie", "token=valid-token")
+        .expect(400);
+      expect(error.error).toEqual(
+        expect.stringContaining("createEvent validation failed")
+      );
+    });
+  });
+  describe("/events/:id", () => {
     it("GET should retrieve one event only from the db", async () => {
       const mockEventData = {
         locationCoordinates: {
@@ -111,37 +208,14 @@ describe("Events", () => {
         .expect(200);
       expect(events).toMatchObject(mockEventData);
     });
-  });
-  describe("/events/create", () => {
-    it("POST should post one event", async () => {
-      jwt.verify.mockReturnValueOnce({ username: "Totoro" });
-      const mockEventData = {
-        locationCoordinates: {
-          lat: 10,
-          long: 90.55
-        },
-        eventName: "FINDING MMORPG",
-        eventStartDate: new Date("2020-10-10").toISOString(),
-        eventEndDate: new Date("2020-10-20").toISOString(),
-        location: "Aliwal",
-        description: "blah blah blah",
-        eventOwner: "Totoro"
-      };
-      const { body: events } = await request(app)
-        .post("/events/create")
-        .send(mockEventData)
-        .set("Cookie", "token=valid-token")
-        .expect(201);
-      expect(events).toMatchObject(mockEventData);
-    });
-  });
-  describe("PATCH", () => {
+
     it("PATCH should edit one event the name", async () => {
-      jwt.verify.mockReturnValueOnce({ username: "Totoro" });
+      jwt.verify.mockReturnValueOnce({ username: "Totoro", userId: "10" });
       const mockEventData = {
         eventName: "FINDING PORORO",
         eventId: "1",
-        eventOwner: "Totoro"
+        eventOwner: "Totoro",
+        eventOwnerId: "10"
       };
       const { body: events } = await request(app)
         .patch("/events/1")
@@ -150,14 +224,29 @@ describe("Events", () => {
         .expect(200);
       expect(events).toMatchObject(mockEventData);
     });
-  });
-  describe("DELETE", () => {
+
+    it("PATCH should not edit if forbidden", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro", userId: "12312" });
+      const mockEventData = {
+        eventName: "FINDING PORORO",
+        eventId: "1",
+        eventOwner: "Totoro",
+        eventOwnerId: "10"
+      };
+      const { body: error } = await request(app)
+        .patch("/events/1")
+        .send(mockEventData)
+        .set("Cookie", "token=valid-token")
+        .expect(403);
+      expect(error.error).toEqual("You cannot edit as this is not your post.");
+    });
     it("DELETE should DELETE one event", async () => {
-      jwt.verify.mockReturnValueOnce({ username: "Totoro" });
+      jwt.verify.mockReturnValueOnce({ username: "Totoro", userId: "10" });
       const mockEventData = {
         eventName: "FINDING MEMO ",
         eventOwner: "Totoro",
-        eventId: "1"
+        eventId: "1",
+        eventOwnerId: "10"
       };
       const { body: events } = await request(app)
         .delete("/events/1")
@@ -165,6 +254,21 @@ describe("Events", () => {
         .set("cookie", "token=valid-token")
         .expect(201);
       expect(events).toMatchObject(mockEventData);
+    });
+    it("DELETE should not delete if forbidden", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro", userId: "12312" });
+      const mockEventData = {
+        eventName: "FINDING PORORO",
+        eventId: "1",
+        eventOwner: "Totoro",
+        eventOwnerId: "10"
+      };
+      const { body: error } = await request(app)
+        .delete("/events/1")
+        .send(mockEventData)
+        .set("Cookie", "token=valid-token")
+        .expect(403);
+      expect(error.error).toEqual("You forbidden. Back off!");
     });
   });
 });
