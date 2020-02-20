@@ -55,7 +55,7 @@ describe("Events", () => {
   });
 
   describe("/users/register", () => {
-    it("POST should add one user", async () => {
+    it("POST should add one user with password of one lowercase, one uppercase and numbers", async () => {
       const expectedUserData = {
         username: "mrliew",
         userId: "3",
@@ -71,9 +71,26 @@ describe("Events", () => {
       expect(users.username).toBe(expectedUserData.username);
       expect(users.password).not.toBe("chocoPie123");
     });
-    it("POST should not add user if schema is wrong", async () => {
+    it("POST should fail with password of no uppercase and numbers", async () => {
       const expectedUserData = {
-        username: "m",
+        username: "mrliew",
+        userId: "3",
+        password: "chocopie123",
+        firstName: "De",
+        lastName: "Hua",
+        stageName: "SuperStar"
+      };
+      const { body: error } = await request(app)
+        .post("/users/register")
+        .send(expectedUserData)
+        .expect(400);
+      expect(error.error).toEqual(
+        expect.stringContaining("createUsers validation failed")
+      );
+    });
+    it("POST should not add user if username is uppercase", async () => {
+      const expectedUserData = {
+        username: "Tororo12",
         userId: "3",
         password: "chocoPie123",
         firstName: "De",
@@ -100,6 +117,7 @@ describe("Events", () => {
         .send(expectedUserData)
         .expect(201);
       expect(users).toBe("You are now logged in!");
+      console.log(users);
     });
     it("POST user should not login if the username or password is wrong", async () => {
       const expectedUserData = {

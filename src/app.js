@@ -1,10 +1,21 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const eventsRouter = require("../src/routes/events.route");
 const usersRouter = require("../src/routes/users.route");
-const cookieParser = require("cookie-parser")
-require("dotenv").config();
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
+const corsOptions = {
+  origin: ["http://localhost:3000", "http://localhost:3001"],
+  credentials: true
+};
+
+app.use(cookieParser());
+app.use(express.json());
+
+app.use("/events", eventsRouter);
+app.use("/users", usersRouter);
 
 app.get("/", (req, res) => {
   res.send({
@@ -20,11 +31,6 @@ app.get("/", (req, res) => {
     "9": "DELETE /user/:username"
   });
 });
-app.use(cookieParser())
-app.use(express.json());
-
-app.use("/events", eventsRouter);
-app.use("/users", usersRouter);
 
 app.use((err, req, res, next) => {
   res.status(err.statusCode || 500);

@@ -69,12 +69,7 @@ const deleteSingleEvent = async (req, res, next) => {
 
 router.get("/", wrapAsync(getAllEvents));
 router.get("/:id", wrapAsync(getSingleEvent));
-router.post(
-  "/create",
-  requireJsonContent,
-  protectRoute,
-  wrapAsync(createEvent)
-);
+router.post("/create",requireJsonContent,protectRoute,wrapAsync(createEvent))
 router.patch("/:id", protectRoute, wrapAsync(editSingleEvent));
 router.delete("/:id", protectRoute, wrapAsync(deleteSingleEvent));
 
