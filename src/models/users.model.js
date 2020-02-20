@@ -6,7 +6,8 @@ const userSchema = Schema({
     type: String,
     required: true,
     minlength: 1,
-    unique: true
+    unique: true,
+    immutable: true,
   },
   username: {
     type: String,
@@ -17,7 +18,7 @@ const userSchema = Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8
+    minlength: 8,
   },
   firstName: String,
   lastName: String,

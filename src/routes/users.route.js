@@ -6,14 +6,6 @@ const jwt = require("jsonwebtoken");
 const { protectRoute } = require("../middleware/auth");
 const uuidv4 = require("uuid/v4");
 
-// const requireJsonContent = (req, res, next) => {
-//   if (req.headers["content-type"] !== "application/json") {
-//     res.status(400).send("File is not in application/json!");
-//   } else {
-//     next();
-//   }
-// };
-
 const createJWTToken = (username, stageName) => {
   const payload = { username: username, stageName: stageName };
   const token = jwt.sign(payload, process.env.JWT_SECRET_KEY);

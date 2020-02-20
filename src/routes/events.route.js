@@ -4,16 +4,13 @@ const eventCreatorModel = require("../models/events.model");
 const wrapAsync = require("../utils/wrapAsync");
 const { protectRoute } = require("../middleware/auth");
 const uuidv4 = require("uuid/v4");
+const requireJsonContent = require("../utils/requireJsonContent");
 
-const requireJsonContent = (req, res, next) => {
-  if (req.headers["content-type"] !== "application/json") {
-    res.status(400).send("File is not in application/json!");
-  } else {
-    next();
-  }
-};
 const getAllEvents = async (req, res) => {
-  const events = await eventCreatorModel.find();
+  const events = await eventCreatorModel.find(
+    {},
+    "eventName eventStartDate eventEndDate location locationCoordinates danceStyle eventSummary"
+  );
   res.status(200).send(events);
 };
 
@@ -25,10 +22,11 @@ const getSingleEvent = async (req, res) => {
   res.status(200).send(event);
 };
 
-const createEvent = async (req, res) => {
+const createEvent = async (req, res, next) => {
   const event = new eventCreatorModel(req.body);
   await eventCreatorModel.init();
   event.eventOwner = req.user.username;
+  event.eventOwnerId = req.user.eventOwnerId;
   event.eventId = uuidv4();
   const newEvent = await event.save();
   res.status(201).send(newEvent);
@@ -39,24 +37,27 @@ const editSingleEvent = async (req, res, next) => {
   const eventOwnerCheck = await eventCreatorModel.findOne({
     eventId: req.params.id
   });
-  if (eventOwnerCheck.eventOwner != req.user.username) {
+  if (eventOwnerCheck.eventOwnerId != req.user.userId) {
     const err = new Error("You cannot edit as this is not your post.");
     err.statusCode = 403;
     next(err);
   }
+
   const updatedEvent = await eventCreatorModel.findOneAndUpdate(
     { eventId: req.params.id },
     newEvent,
     { new: true }
   );
-  res.status(200).send(updatedEvent);
+  updatedEvent.eventOwner = req.user.username;
+  const usernameUpdatedWithEvent = await updatedEvent.save();
+  res.status(200).send(usernameUpdatedWithEvent);
 };
 
 const deleteSingleEvent = async (req, res) => {
   const eventOwnerCheck = await eventCreatorModel.findOne({
     eventId: req.params.id
   });
-  if (eventOwnerCheck.eventOwner != req.user.username) {
+  if (eventOwnerCheck.eventOwnerId != req.user.userId) {
     const err = new Error("You cannot delete THIS SHIT.");
     err.statusCode = 403;
     next(err);
