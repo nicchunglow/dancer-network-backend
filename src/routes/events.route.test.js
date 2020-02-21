@@ -144,6 +144,29 @@ describe("Events", () => {
         .expect(200);
       expect(events).not.toMatchObject(mockEventData);
     });
+    it("testing for 500 error", async () => {
+      const originalEventModel = eventsModel.find;
+      eventsModel.find = jest.fn();
+      eventsModel.find.mockImplementationOnce(() => {
+        const err = new Error();
+        throw err;
+      });
+      const { body: error } = await request(app)
+        .get("/events")
+        .expect(500);
+      expect(error).toEqual({ error: "internal server error" });
+      eventsModel.find = originalEventModel;
+    });
+    it("testing requireJsonContent error", async () => {
+      jwt.verify.mockReturnValueOnce({ username: "Totoro", userId: "10" });
+      const failJson = "fail me now"
+      const { body: error } = await request(app)
+        .post("/events/create")
+        .send(failJson)
+        .set("Cookie", "token=valid-token")
+        .expect(400);
+        expect(error.error).toEqual("File is not in application/json!")
+    });
   });
 
   describe("/events/create", () => {

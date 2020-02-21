@@ -117,7 +117,6 @@ describe("Events", () => {
         .send(expectedUserData)
         .expect(201);
       expect(users).toBe("You are now logged in!");
-      console.log(users);
     });
     it("POST user should not login if the username or password is wrong", async () => {
       const expectedUserData = {

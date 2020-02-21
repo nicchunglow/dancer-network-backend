@@ -8,7 +8,7 @@ const mongoOptions = {
 };
 
 const dbName = "DancerNetwork";
-const dbUrl = global.__MONGODB__URI__ || "mongodb://localhost:27017/" + dbName;
+const dbUrl = process.env.MONGODB_URI || "mongodb://localhost:27017/" + dbName;
 
 mongoose.connect(dbUrl, mongoOptions);
 const db = mongoose.connection;
