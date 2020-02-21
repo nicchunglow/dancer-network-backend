@@ -13,10 +13,10 @@ const corsOptions = {
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors(corsOptions));
 
 app.use("/events", eventsRouter);
 app.use("/users", usersRouter);
-app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
   res.send({
