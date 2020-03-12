@@ -7,14 +7,13 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const corsOptions = {
-  origin: [process.env.FRONTEND_URL, "http://localhost:3000","http://localhost:3000"],
-  credentials: true,
-  allowedHeaders: "content-type"
+  origin: [process.env.FRONTEND_URL,"http://localhost:3000", "http://localhost:3001"],
+  credentials: true
 };
 
-app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors(corsOptions));
 
 app.use("/events", eventsRouter);
 app.use("/users", usersRouter);
