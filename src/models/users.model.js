@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
 
-const checkUsername = function(v){
+const checkUsername = function(v) {
   return /^(?=.*[a-z])[a-z\d]{3,}$/.test(v);
-}
+};
 const checkPassword = function(password) {
   return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password);
 };
@@ -13,7 +13,7 @@ const userSchema = Schema({
     type: String,
     required: true,
     minlength: 1,
-    unique: true, 
+    unique: true,
     immutable: true
   },
   username: {
@@ -22,7 +22,7 @@ const userSchema = Schema({
     unique: true,
     validate: {
       validator: checkUsername
-    },
+    }
   },
   password: {
     type: String,
