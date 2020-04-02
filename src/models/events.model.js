@@ -44,7 +44,7 @@ const eventSchema = Schema({
       validator: checkValidDate
     }
   },
-  location: {
+  address: {
     type: String
   },
   coordinates: coordinateSchema,

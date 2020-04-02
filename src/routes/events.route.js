@@ -9,7 +9,7 @@ const requireJsonContent = require("../utils/requireJsonContent");
 const getAllEvents = async (req, res) => {
   const events = await eventCreatorModel.find(
     {},
-    "eventName eventStartDate eventEndDate location coordinates danceStyle eventSummary"
+    "eventName eventStartDate eventEndDate address coordinates danceStyle eventSummary"
   );
   res.status(200).send(events);
 };

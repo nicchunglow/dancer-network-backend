@@ -38,7 +38,7 @@ describe("Events", () => {
         eventName: "FINDING MEMO ",
         eventStartDate: "2020-10-26",
         eventEndDate: "2020-10-27",
-        location: "Aliwal",
+        address: "Aliwal",
         description: "blah blah blah",
         eventSummary: "Not lorem",
         danceStyle: "Hip Hop",
@@ -54,7 +54,7 @@ describe("Events", () => {
         eventName: "FINDING TIKO 3 ",
         eventStartDate: "2020-10-10",
         eventEndDate: "2020-10-20",
-        location: "Aliwal",
+        address: "Aliwal",
         description: "blah blah blah",
         eventSummary: "Not ipsem",
         danceStyle: "Waacking",
@@ -75,7 +75,7 @@ describe("Events", () => {
   });
 
   describe("/events", () => {
-    it("GET should retrieve all events but with the following key:value pairs: eventName eventStartDate eventEndDate Location locationCoordiantes danceStyle eventSummary", async () => {
+    it("GET should retrieve all events but with the following key:value pairs: eventName eventStartDate eventEndDate address coordinates danceStyle eventSummary", async () => {
       const mockEventData = [
         {
           coordinates: {
@@ -85,7 +85,7 @@ describe("Events", () => {
           eventName: "FINDING MEMO ",
           eventStartDate: "2020-10-26",
           eventEndDate: "2020-10-27",
-          location: "Aliwal"
+          address: "Aliwal"
         },
         {
           coordinates: {
@@ -95,7 +95,7 @@ describe("Events", () => {
           eventName: "FINDING TIKO 3 ",
           eventStartDate: "2020-10-10",
           eventEndDate: "2020-10-20",
-          location: "Aliwal"
+          address: "Aliwal"
         }
       ];
       const { body: events } = await request(app)
@@ -115,7 +115,7 @@ describe("Events", () => {
           eventName: "FINDING MEMO ",
           eventStartDate: "2020-10-26",
           eventEndDate: "2020-10-27",
-          location: "Aliwal",
+          address: "Aliwal",
           description: "blah blah blah",
           eventSummary: "Not lorem",
           danceStyle: "Hip Hop",
@@ -131,7 +131,7 @@ describe("Events", () => {
           eventName: "FINDING TIKO 3 ",
           eventStartDate: "2020-10-10",
           eventEndDate: "2020-10-20",
-          location: "Aliwal",
+          address: "Aliwal",
           description: "blah blah blah",
           eventSummary: "Not ipsem",
           danceStyle: "Waacking",
@@ -180,7 +180,7 @@ describe("Events", () => {
         eventName: "FINDING MMORPG",
         eventStartDate: "2020-10-10",
         eventEndDate: "2020-10-20",
-        location: "Aliwal",
+        address: "Aliwal",
         description: "blah blah blah",
         eventOwner: "Totoro"
       };
@@ -201,7 +201,7 @@ describe("Events", () => {
         eventName: "FINDING MMORPG",
         eventStartDate: "20201-10-10",
         eventEndDate: "20210-10-20",
-        location: "Aliwal",
+        address: "Aliwal",
         description: "blah blah blah",
         eventOwner: "Totoro",
         eventOwnerId: "10"
