@@ -1,7 +1,7 @@
-const express = require("express")
-const app = require("../src/app")
-const mongoose = require("mongoose")
-const request = require("supertest")
+const express = require("express");
+const app = require("../src/app");
+const mongoose = require("mongoose");
+const request = require("supertest");
 
 mongoose.set("useNewUrlParser", true);
 mongoose.set("useFindAndModify", false);
@@ -9,7 +9,7 @@ mongoose.set("useCreateIndex", true);
 mongoose.set("useUnifiedTopology", true);
 
 describe("/", () => {
-  it('should contain the home directory', async () => {
+  it("should contain the home directory", async () => {
     const expectedDirectory = {
       "0": "GET   /events",
       "1": "GET   /events/:id",
@@ -21,9 +21,8 @@ describe("/", () => {
       "7": "GET /users/:username",
       "8": "PATCH /users/:username",
       "9": "DELETE /user/:username"
-    }
-    const {body: response} = await request(app)
-    .get("/")
-    expect(response).toEqual(expectedDirectory)
-  })
-})
+    };
+    const { body: response } = await request(app).get("/");
+    expect(response).toEqual(expectedDirectory);
+  });
+});

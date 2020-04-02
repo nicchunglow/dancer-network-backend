@@ -30,9 +30,9 @@ describe("Events", () => {
   beforeEach(async () => {
     const eventData = [
       {
-        locationCoordinates: {
+        coordinates: {
           lat: 10,
-          long: 90.55
+          lng: 90.55
         },
         eventId: "1",
         eventName: "FINDING MEMO ",
@@ -46,9 +46,9 @@ describe("Events", () => {
         eventOwnerId: "10"
       },
       {
-        locationCoordinates: {
+        coordinates: {
           lat: 10,
-          long: 90.55
+          lng: 90.55
         },
         eventId: "3",
         eventName: "FINDING TIKO 3 ",
@@ -78,9 +78,9 @@ describe("Events", () => {
     it("GET should retrieve all events but with the following key:value pairs: eventName eventStartDate eventEndDate Location locationCoordiantes danceStyle eventSummary", async () => {
       const mockEventData = [
         {
-          locationCoordinates: {
+          coordinates: {
             lat: 10,
-            long: 90.55
+            lng: 90.55
           },
           eventName: "FINDING MEMO ",
           eventStartDate: "2020-10-26",
@@ -88,9 +88,9 @@ describe("Events", () => {
           location: "Aliwal"
         },
         {
-          locationCoordinates: {
+          coordinates: {
             lat: 10,
-            long: 90.55
+            lng: 90.55
           },
           eventName: "FINDING TIKO 3 ",
           eventStartDate: "2020-10-10",
@@ -107,9 +107,9 @@ describe("Events", () => {
     it("GET should not get other details from the schema", async () => {
       const mockEventData = [
         {
-          locationCoordinates: {
+          coordinates: {
             lat: 10,
-            long: 90.55
+            lng: 90.55
           },
           eventId: "1",
           eventName: "FINDING MEMO ",
@@ -123,9 +123,9 @@ describe("Events", () => {
           eventOwnerId: "10"
         },
         {
-          locationCoordinates: {
+          coordinates: {
             lat: 10,
-            long: 90.55
+            lng: 90.55
           },
           eventId: "3",
           eventName: "FINDING TIKO 3 ",
@@ -173,9 +173,9 @@ describe("Events", () => {
     it("POST should post one event", async () => {
       jwt.verify.mockReturnValueOnce({ username: "Totoro" });
       const mockEventData = {
-        locationCoordinates: {
+        coordinates: {
           lat: 10,
-          long: 90.55
+          lng: 90.55
         },
         eventName: "FINDING MMORPG",
         eventStartDate: "2020-10-10",
@@ -194,9 +194,9 @@ describe("Events", () => {
     it("POST should get 'ValidationError' if date are of wrong values", async () => {
       jwt.verify.mockReturnValueOnce({ username: "Totoro", userId: "10" });
       const mockEventData = {
-        locationCoordinates: {
+        coordinates: {
           lat: 10,
-          long: 90.55
+          lng: 90.55
         },
         eventName: "FINDING MMORPG",
         eventStartDate: "20201-10-10",
@@ -219,9 +219,9 @@ describe("Events", () => {
   describe("/events/:id", () => {
     it("GET should retrieve one event only from the db", async () => {
       const mockEventData = {
-        locationCoordinates: {
+        coordinates: {
           lat: 10,
-          long: 90.55
+          lng: 90.55
         },
         eventId: "1",
         eventName: "FINDING MEMO "

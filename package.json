@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "jest --watchAll",
-    "testc": "jest --coverage",
+    "test": "jest",
+    "testd": "jest --detectOpenHandles",
+    "testc": "jest --coverage --watchAll",
     "start:dev": "nodemon src/index.js ",
     "test:band": "jest --runInBand"
   },

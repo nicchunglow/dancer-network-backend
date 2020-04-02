@@ -11,7 +11,7 @@ const coordinateSchema = {
     min: -90,
     max: 90
   },
-  long: {
+  lng: {
     type: Number,
     min: -180,
     max: 180
@@ -47,7 +47,7 @@ const eventSchema = Schema({
   location: {
     type: String
   },
-  locationCoordinates: coordinateSchema,
+  coordinates: coordinateSchema,
   description: String,
 
   eventSummary: {
