@@ -4,7 +4,6 @@ const eventCreatorModel = require("../models/events.model");
 const wrapAsync = require("../utils/wrapAsync");
 const { protectRoute } = require("../middleware/auth");
 const uuidv4 = require("uuid/v4");
-const requireJsonContent = require("../utils/requireJsonContent");
 
 const getAllEvents = async (req, res) => {
   const events = await eventCreatorModel.find(
@@ -69,12 +68,7 @@ const deleteSingleEvent = async (req, res, next) => {
 
 router.get("/", wrapAsync(getAllEvents));
 router.get("/:id", wrapAsync(getSingleEvent));
-router.post(
-  "/create",
-  requireJsonContent,
-  protectRoute,
-  wrapAsync(createEvent)
-);
+router.post("/create", protectRoute, wrapAsync(createEvent));
 router.patch("/:id", protectRoute, wrapAsync(editSingleEvent));
 router.delete("/:id", protectRoute, wrapAsync(deleteSingleEvent));
 
