@@ -8,7 +8,7 @@ const uuidv4 = require("uuid/v4");
 const getAllEvents = async (req, res) => {
   const events = await eventCreatorModel.find(
     {},
-    "eventName eventStartDate eventEndDate address coordinates danceStyle eventSummary"
+    "eventName eventStartDate eventEndDate address coordinates danceStyle eventSummary eventId"
   );
   res.status(200).send(events);
 };
