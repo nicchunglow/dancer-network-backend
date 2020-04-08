@@ -206,7 +206,7 @@ describe("Events", () => {
       );
     });
   });
-  describe("/events/:id", () => {
+  describe("/events/published/:id", () => {
     it("GET should retrieve one event only from the db", async () => {
       const mockEventData = {
         coordinates: {
@@ -217,7 +217,7 @@ describe("Events", () => {
         eventName: "FINDING MEMO "
       };
       const { body: events } = await request(app)
-        .get("/events/1")
+        .get("/events/published/1")
         .expect(200);
       expect(events).toMatchObject(mockEventData);
     });
@@ -231,7 +231,7 @@ describe("Events", () => {
         eventOwnerId: "10"
       };
       const { body: events } = await request(app)
-        .patch("/events/1")
+        .patch("/events/published/1")
         .send(mockEventData)
         .set("Cookie", "token=valid-token")
         .expect(200);
@@ -247,7 +247,7 @@ describe("Events", () => {
         eventOwnerId: "10"
       };
       const { body: error } = await request(app)
-        .patch("/events/1")
+        .patch("/events/published/1")
         .send(mockEventData)
         .set("Cookie", "token=valid-token")
         .expect(403);
@@ -262,7 +262,7 @@ describe("Events", () => {
         eventOwnerId: "10"
       };
       const { body: events } = await request(app)
-        .delete("/events/1")
+        .delete("/events/published/1")
         .send(mockEventData)
         .set("cookie", "token=valid-token")
         .expect(201);
@@ -277,7 +277,7 @@ describe("Events", () => {
         eventOwnerId: "10"
       };
       const { body: error } = await request(app)
-        .delete("/events/1")
+        .delete("/events/published/1")
         .send(mockEventData)
         .set("Cookie", "token=valid-token")
         .expect(403);

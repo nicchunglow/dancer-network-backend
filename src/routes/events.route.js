@@ -67,10 +67,10 @@ const deleteSingleEvent = async (req, res, next) => {
 };
 
 router.get("/", wrapAsync(getAllEvents));
-router.get("/:id", wrapAsync(getSingleEvent));
+router.get("/published/:id", wrapAsync(getSingleEvent));
 router.post("/create", protectRoute, wrapAsync(createEvent));
-router.patch("/:id", protectRoute, wrapAsync(editSingleEvent));
-router.delete("/:id", protectRoute, wrapAsync(deleteSingleEvent));
+router.patch("/published/:id", protectRoute, wrapAsync(editSingleEvent));
+router.delete("/published/:id", protectRoute, wrapAsync(deleteSingleEvent));
 
 router.use((err, req, use, next) => {
   if (err.name === "ValidationError") {
