@@ -10,10 +10,10 @@ const corsOptions = {
   origin: [
     process.env.FRONTEND_URL,
     "http://localhost:3000",
-    "http://localhost:3001"
+    "http://localhost:3001",
   ],
   allowedHeaders: "content-type",
-  credentials: true
+  credentials: true,
 };
 
 app.use(cookieParser());
@@ -26,15 +26,15 @@ app.use("/users", usersRouter);
 app.get("/", (req, res) => {
   res.send({
     "0": "GET   /events",
-    "1": "GET   /events/:id",
+    "1": "GET   /events/published/:id",
     "2": "POST /events/create",
-    "3": "PATCH   /events/:id",
-    "4": "DELETE    /events/:id",
+    "3": "PATCH   /events/published/:id",
+    "4": "DELETE    /events/published/:id",
     "5": "POST /users/register",
     "6": "POST /users/login",
     "7": "GET /users/:username",
     "8": "PATCH /users/:username",
-    "9": "DELETE /user/:username"
+    "9": "DELETE /user/:username",
   });
 });
 

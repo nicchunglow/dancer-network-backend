@@ -34,7 +34,7 @@ const createEvent = async (req, res, next) => {
 const editSingleEvent = async (req, res, next) => {
   const newEvent = req.body;
   const eventOwnerCheck = await eventCreatorModel.findOne({
-    eventId: req.params.id
+    eventId: req.params.id,
   });
   if (eventOwnerCheck.eventOwnerId != req.user.userId) {
     const err = new Error("You cannot edit as this is not your post.");
@@ -53,7 +53,7 @@ const editSingleEvent = async (req, res, next) => {
 
 const deleteSingleEvent = async (req, res, next) => {
   const eventOwnerCheck = await eventCreatorModel.findOne({
-    eventId: req.params.id
+    eventId: req.params.id,
   });
   if (eventOwnerCheck.eventOwnerId != req.user.userId) {
     const err = new Error("You forbidden. Back off!");
@@ -61,7 +61,7 @@ const deleteSingleEvent = async (req, res, next) => {
     next(err);
   }
   const deletedEvent = await eventCreatorModel.findOneAndDelete({
-    eventId: req.params.id
+    eventId: req.params.id,
   });
   res.status(201).send(deletedEvent);
 };

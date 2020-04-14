@@ -12,15 +12,15 @@ describe("/", () => {
   it("should contain the home directory", async () => {
     const expectedDirectory = {
       "0": "GET   /events",
-      "1": "GET   /events/:id",
+      "1": "GET   /events/published/:id",
       "2": "POST /events/create",
-      "3": "PATCH   /events/:id",
-      "4": "DELETE    /events/:id",
+      "3": "PATCH   /events/published/:id",
+      "4": "DELETE    /events/published/:id",
       "5": "POST /users/register",
       "6": "POST /users/login",
       "7": "GET /users/:username",
       "8": "PATCH /users/:username",
-      "9": "DELETE /user/:username"
+      "9": "DELETE /user/:username",
     };
     const { body: response } = await request(app).get("/");
     expect(response).toEqual(expectedDirectory);
