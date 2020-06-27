@@ -32,9 +32,11 @@ router.post("/login", async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = await usersModel.findOne({ username });
+    if (!user) {
+      throw new Error("Login failed");
+    }
     const result = await bcrypt.compare(password, user.password);
-
-    if (!user || !result) {
+    if (!result) {
       throw new Error("Login failed");
     }
 
@@ -43,7 +45,7 @@ router.post("/login", async (req, res, next) => {
     res.cookie("token", token, {
       expires: expiryDate,
       httpOnly: true,
-      withCredentials: true
+      withCredentials: true,
     });
 
     res.status(201).json("You are now logged in!");
@@ -99,7 +101,7 @@ router.delete("/:username", protectRoute, async (req, res, next) => {
       throw new Error(WRONG_USER_MESSAGE);
     }
     const userDeleted = await usersModel.findOneAndDelete({
-      username: req.params.username
+      username: req.params.username,
     });
     res.status(201).send(userDeleted);
   } catch (err) {
