@@ -11,9 +11,14 @@ const mongoOptions = {
 const dbName = "DancerNetwork";
 const dbUrl = process.env.MONGODB_URI || "mongodb://localhost:27017/" + dbName;
 
-mongoose.connect(dbUrl, mongoOptions);
+const connectDB = async () => {
+  mongoose.connect(dbUrl, mongoOptions);
+};
+
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error"));
 db.once("open", () => {
   console.log("CONNECT LIAO. WHAT YOU WANT.");
 });
+
+module.exports = connectDB;
