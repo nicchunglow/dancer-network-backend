@@ -1,10 +1,11 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 
 const mongoOptions = {
   useNewUrlParser: true, // prevent deprecation warnings
   useUnifiedTopology: true,
   useFindAndModify: false, // For find one and update
-  useCreateIndex: true // for creating index with unique
+  useCreateIndex: true, // for creating index with unique
 };
 
 const dbName = "DancerNetwork";
